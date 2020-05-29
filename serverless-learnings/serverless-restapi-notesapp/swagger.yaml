@@ -1,0 +1,78 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: Notes API
+  description: Serverless Rest API for Notes Application
+host: www.example.com
+basePath: /dev
+paths:
+  /notes:
+    post:
+      description: Create a Note
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/Note'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PostNotesFunction.Arn}/invocations
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Note'
+    get:
+      description: Read all Notes
+      produces:
+        - application/json
+      x-amazon-apigateway-integration:
+        httpMethod: get
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetNotesFunction.Arn}/invocations        
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Note'
+  '/notes/{noteId}':
+    delete:
+      description: Delete a Note
+      parameters:
+        - name: noteId
+          in: path
+          type: string
+          required: true
+      x-amazon-apigateway-integration:
+        httpMethod: delete
+        type: aws_proxy
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteNotesFunction.Arn}/invocations      
+      responses:
+        '200':
+          description: OK
+definitions:
+  Note:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      createdBy:
+        type: string

@@ -5,35 +5,59 @@ Description: >
 
   Sample SAM Template for serverless-restapi-notesapp
   
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  NotesRestApi:
+    Type: AWS::Serverless::Api
+    Properties: 
+      StageName: dev
+      DefinitionBody:   
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: "s3://notesapp-swagger-container/swagger.yaml"
+            
+  GetNotesFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello-world/
-      Handler: app.lambdaHandler
+      CodeUri: get-notes/
+      Handler: app.getNotesHandler
       Runtime: nodejs12.x
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        GetNotes:
+          Type: Api
           Properties:
-            Path: /hello
+            RestApiId: !Ref NotesRestApi
+            Path: /notes
             Method: get
 
-Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  PostNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: post-notes/
+      Handler: app.postNotesHandler
+      Runtime: nodejs12.x
+      Events:
+        GetNotes:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotesRestApi
+            Path: /notes
+            Method: post
+
+  DeleteNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete-notes/
+      Handler: app.deleteNotesHandler
+      Runtime: nodejs12.x
+      Events:
+        GetNotes:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotesRestApi
+            Path: /notes/{noteId}
+            Method: delete            

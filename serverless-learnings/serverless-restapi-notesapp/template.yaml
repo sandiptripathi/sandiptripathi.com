@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  serverless-restapi-notesapp
+
+  Sample SAM Template for serverless-restapi-notesapp
+  
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  NotesRestApi:
+    Type: AWS::Serverless::Api
+    Properties: 
+      StageName: dev
+      DefinitionBody:   
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: "s3://notesapp-swagger-container/swagger.yaml"
+            
+  GetNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get-notes/
+      Handler: app.getNotesHandler
+      Runtime: nodejs12.x
+      Events:
+        GetNotes:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotesRestApi
+            Path: /notes
+            Method: get
+
+  PostNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: post-notes/
+      Handler: app.postNotesHandler
+      Runtime: nodejs12.x
+      Events:
+        GetNotes:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotesRestApi
+            Path: /notes
+            Method: post
+
+  DeleteNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete-notes/
+      Handler: app.deleteNotesHandler
+      Runtime: nodejs12.x
+      Events:
+        GetNotes:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotesRestApi
+            Path: /notes/{noteId}
+            Method: delete            

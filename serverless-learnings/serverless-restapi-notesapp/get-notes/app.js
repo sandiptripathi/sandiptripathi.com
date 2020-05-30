@@ -19,10 +19,23 @@ exports.getNotesHandler = async (event, context) => {
         // const ret = await axios(url);
         response = {
             'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-                // location: ret.data.trim()
-            })
+            'body': JSON.stringify([
+                {
+   
+                    "title": "serverless presentation",
+                    "content": "Create demo app using aws services",
+                    "createdAt": "2020-05-30T00:00:00Z",
+                    "createdBy": "sandip"
+                },
+                {
+   
+                    "title": "Doctor's  Appointment",
+                    "content": "Visit doctor for regular checkup ",
+                    "createdAt": "2020-05-30T10:00:00Z",
+                    "createdBy": "sandip"
+                }
+
+            ])
         }
     } catch (err) {
         console.log(err);

@@ -19,10 +19,7 @@ exports.postNotesHandler = async (event, context) => {
         // const ret = await axios(url);
         response = {
             'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-                // location: ret.data.trim()
-            })
+            'body': event.body,
         }
     } catch (err) {
         console.log(err);

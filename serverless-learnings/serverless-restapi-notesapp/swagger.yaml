@@ -19,6 +19,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Note'
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters, and headers"
       x-amazon-apigateway-integration:
         httpMethod: post
         type: aws_proxy
@@ -33,6 +34,7 @@ paths:
       description: Read all Notes
       produces:
         - application/json
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters, and headers"  
       x-amazon-apigateway-integration:
         httpMethod: get
         type: aws_proxy
@@ -53,6 +55,7 @@ paths:
           in: path
           type: string
           required: true
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters, and headers"          
       x-amazon-apigateway-integration:
         httpMethod: delete
         type: aws_proxy
@@ -64,6 +67,10 @@ paths:
 definitions:
   Note:
     type: object
+    required:
+    - "id"
+    - "title"
+    - "content"
     properties:
       id:
         type: string
@@ -76,3 +83,8 @@ definitions:
         format: date-time
       createdBy:
         type: string
+
+x-amazon-apigateway-request-validators:
+  Validate body, query string parameters, and headers:
+    validateRequestParameters: true
+    validateRequestBody: true
